@@ -1,10 +1,21 @@
 package testgroup.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "films")
 public class Film {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "title")
     private String title;
+    @Column(name = "year")
     private Integer year;
+    @Column(name = "genre")
     private String genre;
+    @Column(name = "watched")
     private boolean watched;
 
     public void setId(Integer id) {

@@ -1,5 +1,8 @@
 package testgroup.dao;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import testgroup.model.Film;
 import java.util.*;
@@ -7,10 +10,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
 public class FilmDaoImpl implements FilmDao{
+    private SessionFactory sessionFactory;
     private static final AtomicInteger AUTO_ID = new AtomicInteger(0);
-    private static Map<Integer, Film> films = new HashMap<>();
+    //private static Map<Integer, Film> films = new HashMap<>();
 
-    static {
+    @Autowired
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    /*static {
         Film film1 = new Film();
         film1.setId(AUTO_ID.getAndIncrement());
         film1.setTitle("Inception");
@@ -28,30 +37,34 @@ public class FilmDaoImpl implements FilmDao{
         film2.setWatched(true);
         films.put(film2.getId(), film2);
         // + film2, film3, film4, ...
-    }
+    }*/
     @Override
     public List<Film> allFilms() {
-        return new ArrayList<>(films.values());
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("from Film").list();
     }
 
     @Override
     public void add(Film film) {
-        film.setId(AUTO_ID.getAndIncrement());
-        films.put(film.getId(), film);
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(film);
     }
 
     @Override
     public void delete(Film film) {
-        films.remove(film.getId());
+        Session session = sessionFactory.getCurrentSession();
+        session.delete(film);
     }
 
     @Override
     public void edit(Film film) {
-        films.put(film.getId(), film);
+        Session session = sessionFactory.getCurrentSession();
+        session.update(film);
     }
 
     @Override
     public Film getById(int id) {
-        return films.get(id);
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Film.class, id);
     }
 }
